@@ -3,10 +3,10 @@ export interface PresignResponse { url: string; method: "GET"; key: string; expi
 const PRESIGN_BASE = import.meta.env.VITE_PRESIGN_API_BASE as string;
 const API_BASE = import.meta.env.VITE_API_BASE as string | undefined;
 
-const PUBLIC_ARCHIVE_KEY =
-    import.meta.env.VITE_PUBLIC_ARCHIVE_KEY || "archives/public-dataset.zip";
-const PRIVATE_ARCHIVE_KEY =
-    import.meta.env.VITE_PRIVATE_ARCHIVE_KEY || "archives/private-dataset.zip";
+// const PUBLIC_ARCHIVE_KEY =
+//     import.meta.env.VITE_PUBLIC_ARCHIVE_KEY || "archives/public-dataset.zip";
+// const PRIVATE_ARCHIVE_KEY =
+//     import.meta.env.VITE_PRIVATE_ARCHIVE_KEY || "archives/private-dataset.zip";
 
 // --- types you can export if helpful ---
 export interface PresignedFile {
