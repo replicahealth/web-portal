@@ -10,6 +10,10 @@ frontend:
     build:
       commands:
         - npm run build
+        # DEBUG: list what we produced so we can see it in the logs
+        - echo "=== DIST TREE ===" && ls -la dist && echo "=== ASSETS ===" && ls -la dist/assets || true
+        # Optional hard-fail if no JS assets were produced
+        - test -f dist/assets/*.js || (echo "NO JS ASSETS IN dist/assets — failing build" && exit 1)
   artifacts:
     baseDirectory: dist
     files:
