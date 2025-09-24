@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import Protected from '../components/Protected';
-import { hasPublic, hasPrivate } from '../auth/roles';
+import { hasPrivate } from '../auth/roles';
 
 import TermsModal from '../components/TermsModal';
 
@@ -42,7 +42,6 @@ export default function Datasets() {
     }, [loaded, roles]);
 
     const loadDatasets = async () => {
-        const seesPrivate = hasPrivate(roles);
         
         const allDatasets: Dataset[] = [];
         
