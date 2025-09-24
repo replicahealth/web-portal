@@ -43,7 +43,6 @@ export default function Datasets() {
 
     const loadDatasets = async () => {
         const seesPrivate = hasPrivate(roles);
-        const seesPublic = hasPublic(roles) || seesPrivate;
         
         const allDatasets: Dataset[] = [];
         
@@ -234,7 +233,7 @@ export default function Datasets() {
                             </div>
                         )}
                         
-                        {seesPublic && datasets.filter(d => d.type === 'public').length > 0 && (
+                        {datasets.filter(d => d.type === 'public').length > 0 && (
                             <div>
                                 <h3>Public Datasets</h3>
                                 <div style={{ border: '1px solid #ddd', borderRadius: 4, backgroundColor: 'white' }}>
