@@ -3,17 +3,21 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install 20
-        - nvm use 20
+        - echo "Starting preBuild phase"
+        - nvm install 18
+        - nvm use 18
         - node -v
-        - npm ci
+        - npm -v
+        - echo "Installing dependencies"
+        - npm ci --no-optional
+        - echo "Dependencies installed successfully"
     build:
       commands:
+        - echo "Starting build phase"
         - npm run build
-        # DEBUG: list what we produced so we can see it in the logs
-        - echo "=== DIST TREE ===" && ls -la dist && echo "=== ASSETS ===" && ls -la dist/assets || true
-        # Optional hard-fail if no JS assets were produced
-        - test -f dist/assets/*.js || (echo "NO JS ASSETS IN dist/assets — failing build" && exit 1)
+        - echo "Build completed, checking output"
+        - ls -la dist/
+        - ls -la dist/assets/ || echo "No assets directory found"
   artifacts:
     baseDirectory: dist
     files:

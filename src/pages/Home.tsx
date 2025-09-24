@@ -2,16 +2,11 @@
 import { useAuth0 } from '@auth0/auth0-react';
 import { hasPublic, hasPrivate } from '../auth/roles';
 import { useEffect, useState } from 'react';
-import TermsGate from '../components/TermsGate';
-
 function formatRoleForDisplay(role: string): string {
     if (role === 'dataset:private_v1') return 'Private & Public Datasets';
     if (role === 'dataset:public_v1') return 'Public Datasets';
     return role;
 }
-
-const pv = import.meta.env.VITE_TERMS_PRIVATE_VERSION;
-const pubv = import.meta.env.VITE_TERMS_PUBLIC_VERSION;
 
 export default function Home() {
     const { loginWithRedirect, isAuthenticated, getIdTokenClaims, user } = useAuth0();
