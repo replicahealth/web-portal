@@ -156,8 +156,15 @@ export const handler = async (event) => {
   const token = authHeader.substring(7);
   console.log('Token received:', token.substring(0, 50) + '...');
   
-  // TEMPORARY: Skip JWT validation for testing
-  console.log('Skipping JWT validation for testing');
+  // Validate JWT token
+  const claims = validateJWT(token);
+  
+  if (!claims || !claims.sub) {
+    console.log('Invalid JWT token or missing subject');
+    return cors({ error: "unauthorized" }, 401);
+  }
+  
+  console.log('Valid JWT claims:', { sub: claims.sub, aud: claims.aud, exp: claims.exp });
 
   try {
     const qs = event.queryStringParameters || {};
