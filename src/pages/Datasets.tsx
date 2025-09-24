@@ -52,28 +52,26 @@ export default function Datasets() {
             if (!getToken) throw new Error('Auth token not available');
             const token = await getToken();
             
-            if (seesPublic) {
-                const publicResponse = await fetch(`${import.meta.env.VITE_PRESIGN_API_BASE}/presign?op=list&type=public`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-                if (publicResponse.ok) {
-                    const publicData = await publicResponse.json();
-                    publicData.groups.forEach((group: any) => {
-                        allDatasets.push({ ...group, type: 'public' });
-                    });
-                }
-            }
+            console.log('Token:', token);
+            console.log('API URL:', `${import.meta.env.VITE_PRESIGN_API_BASE}/presign?op=list_groups`);
             
-            if (seesPrivate) {
-                const privateResponse = await fetch(`${import.meta.env.VITE_PRESIGN_API_BASE}/presign?op=list&type=private`, {
-                    headers: { Authorization: `Bearer ${token}` }
+            const response = await fetch(`${import.meta.env.VITE_PRESIGN_API_BASE}/presign?op=list_groups`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('API Response:', data);
+                data.groups.forEach((group: any) => {
+                    // Keep the original type from Lambda (public/private)
+                    allDatasets.push({ ...group });
                 });
-                if (privateResponse.ok) {
-                    const privateData = await privateResponse.json();
-                    privateData.groups.forEach((group: any) => {
-                        allDatasets.push({ ...group, type: 'private' });
-                    });
-                }
+                console.log('All datasets:', allDatasets);
+                console.log('Private datasets:', allDatasets.filter(d => d.type === 'private'));
+                console.log('Public datasets:', allDatasets.filter(d => d.type === 'public'));
+            } else {
+                const errorData = await response.json();
+                console.error('API Error:', errorData);
             }
             
             setDatasets(allDatasets);
@@ -170,7 +168,18 @@ export default function Datasets() {
                 
                 {datasets.length > 0 && (
                     <div style={{ marginTop: 24 }}>
-                        <div style={{ marginBottom: 16, display: 'flex', gap: 16, alignItems: 'center' }}>
+                        <div style={{ 
+                            position: 'sticky', 
+                            top: 0, 
+                            backgroundColor: '#f8fafc', 
+                            padding: '16px 0', 
+                            marginBottom: 16, 
+                            display: 'flex', 
+                            gap: 16, 
+                            alignItems: 'center',
+                            borderBottom: '1px solid #e2e8f0',
+                            zIndex: 10
+                        }}>
                             <button
                                 onClick={handleDownloadClick}
                                 disabled={selectedDatasets.size === 0 || loading}
@@ -195,7 +204,7 @@ export default function Datasets() {
                         {seesPrivate && datasets.filter(d => d.type === 'private').length > 0 && (
                             <div style={{ marginBottom: 24 }}>
                                 <h3>Private Datasets</h3>
-                                <div style={{ border: '1px solid #ddd', borderRadius: 4 }}>
+                                <div style={{ border: '1px solid #ddd', borderRadius: 4, backgroundColor: 'white' }}>
                                     {datasets.filter(d => d.type === 'private').map((dataset) => (
                                         <div
                                             key={dataset.name}
@@ -229,7 +238,7 @@ export default function Datasets() {
                         {seesPublic && datasets.filter(d => d.type === 'public').length > 0 && (
                             <div>
                                 <h3>Public Datasets</h3>
-                                <div style={{ border: '1px solid #ddd', borderRadius: 4 }}>
+                                <div style={{ border: '1px solid #ddd', borderRadius: 4, backgroundColor: 'white' }}>
                                     {datasets.filter(d => d.type === 'public').map((dataset) => (
                                         <div
                                             key={dataset.name}

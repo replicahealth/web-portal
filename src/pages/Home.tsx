@@ -28,7 +28,18 @@ export default function Home() {
                     <img src="/logo-long.png" alt="Replica Health" style={{ marginBottom: '1rem', height: '48px' }} />
                     <h1>Research Data Portal</h1>
                     <p>You need to sign in to access datasets.</p>
-                    <button className="btn btn-primary" onClick={() => loginWithRedirect()}>Sign in with Auth0</button>
+                    <button 
+                        className="btn" 
+                        onClick={() => loginWithRedirect()}
+                        style={{
+                            backgroundColor: 'white',
+                            color: '#3b82f6',
+                            border: '2px solid white',
+                            fontWeight: '600'
+                        }}
+                    >
+                        Sign in
+                    </button>
                 </div>
             </div>
         );
