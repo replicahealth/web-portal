@@ -147,9 +147,8 @@ export default function Datasets() {
     if (!loaded) return null;
 
     const seesPrivate = hasPrivate(roles);
-    const seesPublic = hasPublic(roles) || seesPrivate;
 
-    if (!seesPublic && !seesPrivate) {
+    if (!seesPrivate) {
         return (
             <Protected>
                 <div style={{ padding: 24 }}>
