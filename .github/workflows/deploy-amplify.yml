@@ -1,0 +1,16 @@
+name: Deploy to AWS Amplify
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore: [ 'web-portal-presign.js', '.github/**' ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Trigger Amplify deployment
+      run: |
+        echo "Amplify will automatically deploy frontend changes"
+        echo "This workflow exists to separate Lambda and frontend deployments"
