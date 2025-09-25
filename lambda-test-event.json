@@ -1,0 +1,18 @@
+{
+  "httpMethod": "GET",
+  "headers": {
+    "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6IjVCM0E4QkY4LTdGNzAtNEY4Ni1BNDQ5LTdGNzA4QkY4NUJBMyJ9.eyJpc3MiOiJodHRwczovL2Rldi04Z3c0ZjQwOHdlMnk2emF0LnVzLmF1dGgwLmNvbS8iLCJzdWIiOiJhdXRoMHw2NzEyZjU5YzI4YzY4YzAwMDAwMDAwMDAiLCJhdWQiOiJodHRwczovL3JlcGxpY2EuYXBpIiwiaWF0IjoxNzI3MjI0ODAwLCJleHAiOjk5OTk5OTk5OTksInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwifQ.fake-signature"
+  },
+  "queryStringParameters": {
+    "op": "list_groups"
+  },
+  "requestContext": {
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "auth0|6712f59c28c68c000000000"
+        }
+      }
+    }
+  }
+}

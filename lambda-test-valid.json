@@ -1,0 +1,18 @@
+{
+  "httpMethod": "GET",
+  "headers": {
+    "authorization": "Bearer test-token"
+  },
+  "queryStringParameters": {
+    "op": "list_groups"
+  },
+  "requestContext": {
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "user-123"
+        }
+      }
+    }
+  }
+}

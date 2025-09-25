@@ -50,23 +50,15 @@ export default function Datasets() {
             if (!getToken) throw new Error('Auth token not available');
             const token = await getToken();
             
-            console.log('Token:', token);
-            console.log('API URL:', `${import.meta.env.VITE_PRESIGN_API_BASE}/presign?op=list_groups`);
-            
             const response = await fetch(`${import.meta.env.VITE_PRESIGN_API_BASE}/presign?op=list_groups`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             
             if (response.ok) {
                 const data = await response.json();
-                console.log('API Response:', data);
                 data.groups.forEach((group: any) => {
-                    // Keep the original type from Lambda (public/private)
                     allDatasets.push({ ...group });
                 });
-                console.log('All datasets:', allDatasets);
-                console.log('Private datasets:', allDatasets.filter(d => d.type === 'private'));
-                console.log('Public datasets:', allDatasets.filter(d => d.type === 'public'));
             } else {
                 const errorData = await response.json();
                 console.error('API Error:', errorData);
@@ -120,19 +112,37 @@ export default function Datasets() {
             if (!response.ok) throw new Error('Batch download failed');
             const { urls } = await response.json();
             
-            for (const item of urls) {
-                if (item.url.startsWith('data:')) {
-                    // For mock data URLs, create a download link
+            // Show download instructions for multiple files
+            if (urls.length > 1) {
+                const message = `Found ${urls.length} files to download:\n\n${urls.map((item, i) => `${i+1}. ${item.key.split('/').pop()}`).join('\n')}\n\nClick OK to open all download links. You may need to allow popups in your browser.`;
+                if (!confirm(message)) {
+                    return;
+                }
+            }
+            
+            // Create and trigger all downloads immediately
+            urls.forEach((item, index) => {
+                
+                // Use window.open for better popup handling
+                const newWindow = window.open(item.url, '_blank');
+                
+                // Fallback to link click if popup blocked
+                if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
                     const link = document.createElement('a');
                     link.href = item.url;
                     link.download = item.key.split('/').pop() || 'dataset.csv';
+                    link.target = '_blank';
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                } else {
-                    window.open(item.url, '_blank');
                 }
-                await new Promise(resolve => setTimeout(resolve, 100));
+            });
+            
+            // Show popup blocker warning if multiple files
+            if (urls.length > 1) {
+                setTimeout(() => {
+                    alert('If some downloads didn\'t start, please allow popups for this site and try again.');
+                }, 1000);
             }
         } catch (error) {
             console.error('Download failed:', error);
@@ -186,7 +196,12 @@ export default function Datasets() {
                                     cursor: selectedDatasets.size > 0 ? 'pointer' : 'not-allowed'
                                 }}
                             >
-                                {loading ? 'Downloading...' : `Download Selected (${selectedDatasets.size})`}
+                                {loading ? (
+                                    <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                        <span className="spinner"></span>
+                                        Downloading...
+                                    </span>
+                                ) : `Download Selected (${selectedDatasets.size})`}
                             </button>
                             
                             <button
@@ -200,7 +215,39 @@ export default function Datasets() {
                         
                         {seesPrivate && datasets.filter(d => d.type === 'private').length > 0 && (
                             <div style={{ marginBottom: 24 }}>
-                                <h3>Private Datasets</h3>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                    <h3>Private Datasets</h3>
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <button 
+                                            onClick={() => {
+                                                const privateDatasets = datasets.filter(d => d.type === 'private');
+                                                setSelectedDatasets(prev => {
+                                                    const newSet = new Set(prev);
+                                                    privateDatasets.forEach(d => newSet.add(d.name));
+                                                    return newSet;
+                                                });
+                                            }}
+                                            className="btn btn-secondary"
+                                            style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                                        >
+                                            Select All
+                                        </button>
+                                        <button 
+                                            onClick={() => {
+                                                const privateDatasets = datasets.filter(d => d.type === 'private');
+                                                setSelectedDatasets(prev => {
+                                                    const newSet = new Set(prev);
+                                                    privateDatasets.forEach(d => newSet.delete(d.name));
+                                                    return newSet;
+                                                });
+                                            }}
+                                            className="btn btn-secondary"
+                                            style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                                        >
+                                            Deselect All
+                                        </button>
+                                    </div>
+                                </div>
                                 <div style={{ border: '1px solid #ddd', borderRadius: 4, backgroundColor: 'white' }}>
                                     {datasets.filter(d => d.type === 'private').map((dataset) => (
                                         <div
@@ -234,7 +281,39 @@ export default function Datasets() {
                         
                         {datasets.filter(d => d.type === 'public').length > 0 && (
                             <div>
-                                <h3>Public Datasets</h3>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                                    <h3>Public Datasets</h3>
+                                    <div style={{ display: 'flex', gap: 8 }}>
+                                        <button 
+                                            onClick={() => {
+                                                const publicDatasets = datasets.filter(d => d.type === 'public');
+                                                setSelectedDatasets(prev => {
+                                                    const newSet = new Set(prev);
+                                                    publicDatasets.forEach(d => newSet.add(d.name));
+                                                    return newSet;
+                                                });
+                                            }}
+                                            className="btn btn-secondary"
+                                            style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                                        >
+                                            Select All
+                                        </button>
+                                        <button 
+                                            onClick={() => {
+                                                const publicDatasets = datasets.filter(d => d.type === 'public');
+                                                setSelectedDatasets(prev => {
+                                                    const newSet = new Set(prev);
+                                                    publicDatasets.forEach(d => newSet.delete(d.name));
+                                                    return newSet;
+                                                });
+                                            }}
+                                            className="btn btn-secondary"
+                                            style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                                        >
+                                            Deselect All
+                                        </button>
+                                    </div>
+                                </div>
                                 <div style={{ border: '1px solid #ddd', borderRadius: 4, backgroundColor: 'white' }}>
                                     {datasets.filter(d => d.type === 'public').map((dataset) => (
                                         <div

@@ -1,4 +1,4 @@
-
+import React from 'react';
 
 interface TermsModalProps {
     isOpen: boolean;
@@ -8,6 +8,21 @@ interface TermsModalProps {
 }
 
 export default function TermsModal({ isOpen, onClose, onAccept, datasetType }: TermsModalProps) {
+    const [hasScrolled, setHasScrolled] = React.useState(false);
+    const termsRef = React.useRef<HTMLDivElement>(null);
+    
+    React.useEffect(() => {
+        if (isOpen) {
+            setHasScrolled(false);
+        }
+    }, [isOpen]);
+    
+    const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+        const element = e.currentTarget;
+        const isScrolledToBottom = element.scrollHeight - element.scrollTop <= element.clientHeight + 5;
+        setHasScrolled(isScrolledToBottom);
+    };
+    
     if (!isOpen) return null;
 
     const terms = datasetType === 'private' ? `
@@ -80,19 +95,42 @@ Replica Health provides this data "as is" without warranties.
                     {datasetType === 'private' ? 'Private' : 'Public'} Dataset Terms of Use
                 </h2>
                 
-                <div style={{
-                    backgroundColor: '#f8fafc',
-                    padding: '1rem',
-                    borderRadius: '8px',
-                    marginBottom: '1.5rem',
-                    maxHeight: '400px',
-                    overflow: 'auto',
-                    fontSize: '0.9rem',
-                    lineHeight: '1.6',
-                    whiteSpace: 'pre-line'
-                }}>
+                <div 
+                    ref={termsRef}
+                    onScroll={handleScroll}
+                    style={{
+                        backgroundColor: '#f8fafc',
+                        padding: '1rem',
+                        borderRadius: '8px',
+                        marginBottom: '1rem',
+                        maxHeight: '400px',
+                        overflow: 'auto',
+                        fontSize: '0.9rem',
+                        lineHeight: '1.6',
+                        whiteSpace: 'pre-line',
+                        border: '1px solid #e2e8f0'
+                    }}
+                >
                     {terms}
                 </div>
+                
+                {!hasScrolled && (
+                    <div style={{
+                        backgroundColor: '#fef3c7',
+                        border: '1px solid #f59e0b',
+                        borderRadius: '6px',
+                        padding: '0.75rem',
+                        marginBottom: '1rem',
+                        fontSize: '0.875rem',
+                        color: '#92400e',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                    }}>
+                        <span>⬇️</span>
+                        Please scroll to the bottom to read all terms before accepting
+                    </div>
+                )}
 
                 <div style={{
                     display: 'flex',
@@ -108,6 +146,11 @@ Replica Health provides this data "as is" without warranties.
                     <button
                         className="btn btn-primary"
                         onClick={onAccept}
+                        disabled={!hasScrolled}
+                        style={{
+                            opacity: hasScrolled ? 1 : 0.5,
+                            cursor: hasScrolled ? 'pointer' : 'not-allowed'
+                        }}
                     >
                         I Agree & Download
                     </button>
