@@ -1,8 +1,10 @@
 // Simple Lambda function that validates JWT tokens manually
 const { S3Client, ListObjectsV2Command, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
 
 const s3 = new S3Client({ region: "us-east-1" });
+const ses = new SESClient({ region: "us-east-1" });
 
 const BUCKET_NAME = "replica-general-data-repository";
 const PROCESSED_PREFIX = "processed_data_final_expanded/";
@@ -220,17 +222,49 @@ exports.handler = async (event) => {
     
     console.log('Access request received:', { name, email, description });
     
-    // TODO: Set up SES permissions and email verification
-    // For now, just log the request
-    console.log(`EMAIL NOTIFICATION NEEDED:
-To: sam@replica.health, courtney@replica.health
-Subject: Dataset Access Request
-Body: Name: ${name}\nEmail: ${email}\nRequest: ${description}`);
-    
-    return cors({
-      success: true,
-      message: "Request submitted successfully (logged for manual review)"
-    });
+    // Send email notification via SES
+    try {
+      const emailParams = {
+        Source: 'courtney@replica.health', // Must be verified in SES
+        Destination: {
+          ToAddresses: ['sam@replica.health', 'courtney@replica.health']
+        },
+        Message: {
+          Subject: {
+            Data: 'Dataset Access Request',
+            Charset: 'UTF-8'
+          },
+          Body: {
+            Text: {
+              Data: `New dataset access request:
+
+Name: ${name}
+Email: ${email}
+Request: ${description}
+
+Please review and respond to the user.`,
+              Charset: 'UTF-8'
+            }
+          }
+        }
+      };
+      
+      await ses.send(new SendEmailCommand(emailParams));
+      console.log('Email notification sent successfully');
+      
+      return cors({
+        success: true,
+        message: "Request submitted successfully. You will receive a response within 24 hours."
+      });
+    } catch (emailError) {
+      console.error('Failed to send email:', emailError);
+      
+      // Still return success to user, but log the email failure
+      return cors({
+        success: true,
+        message: "Request submitted successfully (email notification pending)"
+      });
+    }
   }
 
   // For dataset operations, require dataset roles
