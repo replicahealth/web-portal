@@ -1,0 +1,22 @@
+{
+  "httpMethod": "POST",
+  "queryStringParameters": {
+    "op": "request_access"
+  },
+  "headers": {
+    "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImtpZCI6InRlc3QifQ.eyJzdWIiOiJ0ZXN0LXVzZXIiLCJhdWQiOiJodHRwczovL3JlcGxpY2EuYXBpIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjE2MDAwMDAwMDB9.test-signature",
+    "Content-Type": "application/json"
+  },
+  "body": "{\"name\":\"Test User\",\"email\":\"test@example.com\",\"description\":\"I need access to datasets for my research project on diabetes management.\"}",
+  "requestContext": {
+    "authorizer": {
+      "jwt": {
+        "claims": {
+          "sub": "test-user",
+          "aud": "https://replica.api",
+          "exp": 9999999999
+        }
+      }
+    }
+  }
+}

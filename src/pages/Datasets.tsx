@@ -3,6 +3,7 @@ import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import Protected from '../components/Protected';
 import { hasPrivate } from '../auth/roles';
+import { RequestAccessForm } from '../components/RequestAccessForm';
 
 import TermsModal from '../components/TermsModal';
 
@@ -41,13 +42,19 @@ export default function Datasets() {
 
     React.useEffect(() => {
         (async () => {
-            const claims = await getIdTokenClaims();
-            const ns = 'https://replicahealth.com/roles';
-            const r = (claims?.[ns] as string[]) || [];
-            setRoles(r);
-            setLoaded(true);
+            try {
+                const claims = await getIdTokenClaims();
+                const ns = 'https://replicahealth.com/roles';
+                const r = (claims?.[ns] as string[]) || [];
+                setRoles(r);
+                setLoaded(true);
+            } catch (error) {
+                console.error('Failed to get token claims:', error);
+                setRoles([]);
+                setLoaded(true);
+            }
         })();
-    }, [getIdTokenClaims]);
+    }, [getIdTokenClaims, user]);
 
     React.useEffect(() => {
         if (!loaded) return;
@@ -174,7 +181,7 @@ export default function Datasets() {
             <Protected>
                 <div style={{ padding: 24 }}>
                     <h2>Datasets</h2>
-                    <p>You don't have dataset access yet.</p>
+                    <RequestAccessForm userEmail={user?.email} />
                 </div>
             </Protected>
         );

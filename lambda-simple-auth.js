@@ -177,7 +177,7 @@ function cors(body, statusCode = 200) {
 export const handler = async (event) => {
   if (event?.httpMethod === "OPTIONS") return cors("", 204);
 
-  // Check if API Gateway already validated JWT and passed claims
+  // For all operations, require JWT validation
   const apiGatewayClaims = event.requestContext?.authorizer?.jwt?.claims;
   
   let claims;
@@ -205,9 +205,58 @@ export const handler = async (event) => {
     return cors({ error: "unauthorized", details: "Missing subject claim" }, 401);
   }
 
+  const qs = event.queryStringParameters || {};
+  const op = (qs.op || "list_groups").toLowerCase();
+  
+  // Allow authenticated users to request access (no role required)
+  if (op === "request_access") {
+    console.log('Processing request_access operation');
+    let body = {};
+    if (event.body) { 
+      try { 
+        body = JSON.parse(event.body);
+        console.log('Parsed body:', body); 
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        return cors({ error: "Invalid JSON in request body" }, 400);
+      }
+    }
+    
+    const { name, email, description } = body;
+    console.log('Extracted fields:', { name, email, description });
+    if (!name || !email || !description) {
+      return cors({ 
+        error: "name, email, and description are required",
+        received: { name: !!name, email: !!email, description: !!description }
+      }, 400);
+    }
+    
+    console.log('Access request received:', { name, email, description });
+    
+    // TODO: Set up SES permissions and email verification
+    // For now, just log the request
+    console.log(`EMAIL NOTIFICATION NEEDED:
+To: sam@replica.health, courtney@replica.health
+Subject: Dataset Access Request
+Body: Name: ${name}\nEmail: ${email}\nRequest: ${description}`);
+    
+    return cors({
+      success: true,
+      message: "Request submitted successfully (logged for manual review)"
+    });
+  }
+
+  // For dataset operations, require dataset roles
+  const rolesClaimKey = 'https://replicahealth.com/roles';
+  const userRoles = (claims[rolesClaimKey] as string[]) || [];
+  const hasDatasetAccess = userRoles.some(role => role.includes('dataset:'));
+  
+  if (!hasDatasetAccess && op !== 'request_access') {
+    return cors({ error: "insufficient permissions", details: "Dataset access required" }, 403);
+  }
+
   try {
-    const qs = event.queryStringParameters || {};
-    const op = (qs.op || "list_groups").toLowerCase();
+    console.log('Operation:', op, 'Query params:', qs);
 
     if (op === "get") {
       const key = (qs.key || "").trim();
@@ -271,8 +320,9 @@ export const handler = async (event) => {
       return cors({ urls, skipped, expires: URL_TTL_SECONDS });
     }
 
-    return cors({ error: "Invalid operation" }, 400);
+    return cors({ error: "Invalid operation", operation: op, available: ["get", "list_groups", "batch", "request_access"] }, 400);
   } catch (err) {
+    console.error('Handler error:', err);
     return cors({ error: "internal error" }, 500);
   }
 };
