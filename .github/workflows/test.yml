@@ -16,11 +16,11 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
     
     - name: Install dependencies
-      run: npm ci
+      run: npm install
     
     - name: Run linting
       run: npm run lint
@@ -44,14 +44,14 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
         cache: 'npm'
         cache-dependency-path: lambda/package.json
     
     - name: Install Lambda dependencies
       run: |
         cd lambda
-        npm ci
+        npm install
     
     - name: Run Lambda tests
       run: |
