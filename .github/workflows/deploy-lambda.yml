@@ -3,11 +3,16 @@ name: Deploy Lambda Function
 on:
   push:
     branches: [ main ]
-    paths: [ 'web-portal-presign.js' ]
+    paths: [ 'lambda/**' ]
+  workflow_run:
+    workflows: ["Run Tests"]
+    types: [completed]
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     
     steps:
     - uses: actions/checkout@v4
@@ -21,7 +26,9 @@ jobs:
     
     - name: Deploy Lambda function
       run: |
-        zip lambda-deployment.zip web-portal-presign.js
+        cd lambda
+        zip ../lambda-deployment.zip index.js
+        cd ..
         aws lambda update-function-code \
           --function-name web-portal-presign \
           --zip-file fileb://lambda-deployment.zip

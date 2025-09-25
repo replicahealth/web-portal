@@ -10,7 +10,10 @@
     "lint:fix": "eslint . --fix",
     "type-check": "tsc -b --noEmit",
     "pre-commit": "npm run lint && npm run type-check",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:lambda": "cd lambda && npm test"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.4.0",
@@ -23,6 +26,12 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@testing-library/dom": "^9.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@vitest/ui": "^1.0.0",
+    "jsdom": "^23.0.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
@@ -30,6 +39,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "vitest": "^1.0.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"

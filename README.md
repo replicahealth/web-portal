@@ -110,21 +110,37 @@ src/
 ├── components/           # Reusable React components
 │   ├── Protected.tsx     # Route protection
 │   ├── TermsGate.tsx     # Terms agreement component
-│   └── TermsModal.tsx    # Terms of use modal
+│   ├── TermsModal.tsx    # Terms of use modal
+│   ├── RequestAccessForm.tsx # Access request form
+│   └── __tests__/        # Component tests
 ├── lib/                  # API utilities
 │   └── api.ts           # Dataset API functions
 ├── pages/               # Application pages
-│   ├── Home.tsx         # Landing page
+│   ├── Home.tsx         # Landing page with mission statement
 │   └── Datasets.tsx     # Dataset browser and download
 ├── styles/              # CSS styling
 │   └── replica.css      # Replica Health theme
 └── App.tsx              # Main application component
+lambda/                   # AWS Lambda function
+├── index.js             # Lambda function code
+├── package.json         # Lambda dependencies
+├── README.md            # Lambda documentation
+└── lambda-test-*.json   # Test event files
+.github/workflows/        # CI/CD pipelines
+├── test.yml             # Run tests on push/PR
+├── deploy-lambda.yml    # Deploy Lambda function
+└── pr-checks.yml        # PR validation
 ```
+
+## Mission
+
+Replica Health is building the world's largest standardized diabetes research dataset by systematically processing and harmonizing major diabetes studies from around the globe. Similar to how ImageNet revolutionized computer vision by providing a unified, accessible dataset, we're creating a comprehensive resource that enables researchers to accelerate diabetes care innovations.
 
 ## User Roles
 
 - **`dataset:public_v1`**: Access to public datasets only
 - **`dataset:private_v1`**: Access to both public and private datasets
+- **No dataset role**: Can request access via the built-in form
 
 ## API Endpoints
 
@@ -144,12 +160,48 @@ For development, use the included mock server (`mock-server.cjs`) which simulate
 - File downloads with mock CSV data
 - Role-based access control
 
+## Testing
+
+### Run Tests
+
+```bash
+# Frontend tests (React components)
+npm test
+
+# Lambda tests (Node.js)
+npm run test:lambda
+
+# Watch mode for development
+npm run test:watch
+```
+
+### Test Coverage
+
+- **Frontend**: Component rendering, form validation, API integration
+- **Lambda**: JWT validation, CORS headers, utility functions
+- **CI/CD**: Automated testing on every push and PR
+
 ## Deployment
+
+### Automated (Production)
+
+- **Frontend**: AWS Amplify automatically deploys on push to main
+- **Lambda**: GitHub Actions deploys Lambda function when `lambda/` changes
+- **Tests**: Must pass before any deployment occurs
+
+### Manual Setup
 
 1. Build the application: `npm run build`
 2. Deploy `dist/` folder to your hosting service
 3. Ensure environment variables are configured in production
 4. Update Auth0 callback URLs for production domain
+
+### Branch Protection
+
+See `.github/branch-protection.md` for setting up:
+- Required PR reviews
+- Required status checks (tests must pass)
+- No direct pushes to main
 
 ## Troubleshooting
 
@@ -166,6 +218,16 @@ For development, use the included mock server (`mock-server.cjs`) which simulate
 - Check console for API errors
 - Verify `.env` file is not committed to git
 - Test with different user roles
+
+## Development Workflow
+
+1. Create feature branch: `git checkout -b feature/my-feature`
+2. Make changes and test locally: `npm test && npm run test:lambda`
+3. Push branch: `git push origin feature/my-feature`
+4. Create PR to main
+5. Tests run automatically
+6. After PR approval and tests pass → merge to main
+7. Automatic deployment to production
 
 ## License
 

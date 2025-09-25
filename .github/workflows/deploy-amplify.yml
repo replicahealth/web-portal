@@ -3,7 +3,7 @@ name: Deploy to AWS Amplify
 on:
   push:
     branches: [ main ]
-    paths-ignore: [ 'web-portal-presign.js', '.github/**' ]
+    paths-ignore: [ 'lambda/**', '.github/**' ]
 
 jobs:
   deploy:
