@@ -16,6 +16,19 @@ interface Dataset {
     }>;
 }
 
+function formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+}
+
+function formatTotalSize(files: Array<{key: string; size: number}>): string {
+    const totalBytes = files.reduce((sum, file) => sum + file.size, 0);
+    return formatFileSize(totalBytes);
+}
+
 export default function Datasets() {
     const { user, getIdTokenClaims } = useAuth0();
     const [roles, setRoles] = React.useState<string[]>([]);
@@ -270,7 +283,7 @@ export default function Datasets() {
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ fontWeight: 'bold' }}>{dataset.name}</div>
                                                 <div style={{ fontSize: '0.9em', color: '#666' }}>
-                                                    {dataset.count} files
+                                                    {dataset.count} files • {formatTotalSize(dataset.files)}
                                                 </div>
                                             </div>
                                         </div>
@@ -336,7 +349,7 @@ export default function Datasets() {
                                             <div style={{ flex: 1 }}>
                                                 <div style={{ fontWeight: 'bold' }}>{dataset.name}</div>
                                                 <div style={{ fontSize: '0.9em', color: '#666' }}>
-                                                    {dataset.count} files
+                                                    {dataset.count} files • {formatTotalSize(dataset.files)}
                                                 </div>
                                             </div>
                                         </div>
