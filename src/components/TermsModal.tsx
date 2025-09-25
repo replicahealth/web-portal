@@ -28,48 +28,22 @@ export default function TermsModal({ isOpen, onClose, onAccept, datasetType }: T
     
     if (!isOpen) return null;
 
-    const terms = datasetType === 'private' ? `
-# Private Dataset Terms of Use
+    const terms = `
+${user?.email || '[RESEARCHER_EMAIL]'} (the "Researcher") has requested permission to use the ${datasetType === 'private' ? 'Private Research' : 'Public Research'} database (the "Database") at Replica Health and JAEB. In exchange for such permission, Researcher hereby agrees to the following terms and conditions:
 
-## 1. Data Usage Agreement
-By downloading this private dataset, you agree to:
-- Use the data solely for research purposes
-- Not redistribute or share the data with third parties
-- Maintain strict confidentiality of all patient information
-- Follow all applicable privacy regulations (HIPAA, GDPR, etc.)
+1. Researcher shall use the Database only for non-commercial research and educational purposes.
 
-## 2. Restrictions
-- Commercial use is strictly prohibited
-- Data must be stored securely with appropriate encryption
-- Access limited to authorized research personnel only
-- Data must be deleted after research completion
+2. Replica Health and JAEB make no representations or warranties regarding the Database, including but not limited to warranties of non-infringement or fitness for a particular purpose.
 
-## 3. Attribution
-Any publications using this data must cite:
-"Data provided by Replica Health Research Portal"
+3. Researcher accepts full responsibility for his or her use of the Database and shall defend and indemnify the Replica Health team, Replica Health, and JAEB, including their employees, Trustees, officers and agents, against any and all claims arising from Researcher's use of the Database, including but not limited to Researcher's use of any copies of copyrighted images that he or she may create from the Database.
 
-## 4. Liability
-Replica Health provides this data "as is" without warranties.
-Users assume all responsibility for data handling and compliance.
-    ` : `
-# Public Dataset Terms of Use
+4. Researcher may provide research associates and colleagues with access to the Database provided that they first agree to be bound by these terms and conditions.
 
-## 1. Data Usage Agreement
-By downloading this public dataset, you agree to:
-- Use the data for research and educational purposes
-- Properly attribute the data source in any publications
-- Respect the privacy of individuals in the dataset
+5. Replica Health and JAEB reserve the right to terminate Researcher's access to the Database at any time.
 
-## 2. Permitted Uses
-- Academic research and education
-- Non-commercial analysis and visualization
-- Open source research projects
+6. If Researcher is employed by a for-profit, commercial entity, Researcher's employer shall also be bound by these terms and conditions, and Researcher hereby represents that he or she is fully authorized to enter into this agreement on behalf of such employer.
 
-## 3. Attribution
-Please cite: "Data provided by Replica Health Research Portal"
-
-## 4. Liability
-Replica Health provides this data "as is" without warranties.
+7. The law of the State of New York shall apply to all disputes under this agreement.
     `;
 
     return (
