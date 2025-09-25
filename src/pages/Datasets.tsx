@@ -114,14 +114,14 @@ export default function Datasets() {
             
             // Show download instructions for multiple files
             if (urls.length > 1) {
-                const message = `Found ${urls.length} files to download:\n\n${urls.map((item, i) => `${i+1}. ${item.key.split('/').pop()}`).join('\n')}\n\nClick OK to open all download links. You may need to allow popups in your browser.`;
+                const message = `Found ${urls.length} files to download:\n\n${urls.map((item: any, i: number) => `${i+1}. ${item.key.split('/').pop()}`).join('\n')}\n\nClick OK to open all download links. You may need to allow popups in your browser.`;
                 if (!confirm(message)) {
                     return;
                 }
             }
             
             // Create and trigger all downloads immediately
-            urls.forEach((item, index) => {
+            urls.forEach((item: any) => {
                 
                 // Use window.open for better popup handling
                 const newWindow = window.open(item.url, '_blank');
