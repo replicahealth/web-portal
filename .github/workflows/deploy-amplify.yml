@@ -14,7 +14,10 @@ jobs:
       with:
         node-version: '20'
         cache: 'npm'
-    - run: npm install
+    - name: Clean install dependencies
+      run: |
+        rm -rf node_modules package-lock.json
+        npm install
     - run: npm test
     - run: npm run test:lambda
 
