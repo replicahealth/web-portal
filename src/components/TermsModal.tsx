@@ -1,4 +1,6 @@
 import React from 'react';
+import { recordTermsAgreement } from '../lib/userTracking';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface TermsModalProps {
     isOpen: boolean;
@@ -8,6 +10,7 @@ interface TermsModalProps {
 }
 
 export default function TermsModal({ isOpen, onClose, onAccept, datasetType }: TermsModalProps) {
+    const { user } = useAuth0();
     const [hasScrolled, setHasScrolled] = React.useState(false);
     const termsRef = React.useRef<HTMLDivElement>(null);
     
@@ -145,7 +148,13 @@ Replica Health provides this data "as is" without warranties.
                     </button>
                     <button
                         className="btn btn-primary"
-                        onClick={onAccept}
+                        onClick={async () => {
+                            if (user?.sub) {
+                                const version = import.meta.env[`VITE_TERMS_${datasetType.toUpperCase()}_VERSION`] || 'v1';
+                                await recordTermsAgreement(user.sub, version, datasetType);
+                            }
+                            onAccept();
+                        }}
                         disabled={!hasScrolled}
                         style={{
                             opacity: hasScrolled ? 1 : 0.5,

@@ -2,7 +2,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function TokenBridge() {
-    const { getAccessTokenSilently, isAuthenticated } = useAuth0();
+    const { getAccessTokenSilently, isAuthenticated, user } = useAuth0();
 
     // Expose a function on window for non-React code to call
     (window as any).__auth0_getToken = async () => {
@@ -17,6 +17,9 @@ export default function TokenBridge() {
             authorizationParams: { audience }
         });
     };
+
+    // Expose user ID for tracking
+    (window as any).__auth0_getUserId = () => user?.sub;
 
     return null;
 }

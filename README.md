@@ -8,6 +8,7 @@ React + Vite portal for dataset access with Auth0 authentication and role-based 
 - **Dataset Management**: Browse and download research datasets
 - **Role-based Access**: Public and private dataset permissions
 - **Terms of Use**: Modal agreements before downloads
+- **User Activity Tracking**: Records terms agreements and download history
 - **Responsive Design**: Modern UI with Replica Health branding
 
 ## Getting Started
@@ -65,11 +66,18 @@ BUCKET_NAME=your-s3-bucket-name
 
 ### 4. Auth0 Setup
 
+#### Single Page Application (for user login):
 1. Create an Auth0 application (Single Page Application)
 2. Configure allowed callback URLs: `http://localhost:5173`
 3. Configure allowed logout URLs: `http://localhost:5173`
 4. Set up custom claims for roles in Auth0 Actions
 5. Configure user roles: `dataset:public_v1` or `dataset:private_v1`
+
+#### Machine-to-Machine Application (for user tracking):
+1. Create or use existing M2M application
+2. Authorize it for Auth0 Management API
+3. Grant scopes: `read:users` and `update:users`
+4. Add credentials to `.env` as `VITE_AUTH0_M2M_CLIENT_ID` and `VITE_AUTH0_M2M_CLIENT_SECRET`
 
 ### 5. Development Mode
 

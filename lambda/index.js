@@ -2,9 +2,28 @@
 const { S3Client, ListObjectsV2Command, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
+const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 
 const s3 = new S3Client({ region: "us-east-1" });
 const ses = new SESClient({ region: "us-east-1" });
+const dynamodb = new DynamoDBClient({ region: "us-east-1" });
+
+// Track user activity
+async function trackUserActivity(userId, activity, details) {
+  try {
+    await dynamodb.send(new PutItemCommand({
+      TableName: 'user-activity-log',
+      Item: {
+        userId: { S: userId },
+        timestamp: { S: new Date().toISOString() },
+        activity: { S: activity },
+        details: { S: JSON.stringify(details) }
+      }
+    }));
+  } catch (error) {
+    console.error('Failed to track activity:', error);
+  }
+}
 
 const BUCKET_NAME = "replica-general-data-repository";
 const PROCESSED_PREFIX = "processed_data_final_expanded/";
@@ -295,6 +314,13 @@ Please review and respond to the user.`,
         }),
         { expiresIn: URL_TTL_SECONDS }
       );
+      // Track download
+      await trackUserActivity(claims.sub, 'download', {
+        filename: key.split('/').pop(),
+        key: key,
+        type: key.includes('public') ? 'public' : 'private'
+      });
+      
       return cors({ url, method: "GET", key, expires: URL_TTL_SECONDS });
     }
 

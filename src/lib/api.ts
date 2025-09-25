@@ -128,6 +128,8 @@ export async function openDownload(key: string, newTab = true) {
     }
 }
 
+import { recordDownload } from './userTracking';
+
 // NEW helper: get a presigned URL for the archive zip
 export async function presignArchive(kind: 'public' | 'private'): Promise<string> {
     const base = import.meta.env.VITE_PRESIGN_API_BASE as string;
@@ -154,5 +156,17 @@ export async function presignArchive(kind: 'public' | 'private'): Promise<string
         throw new Error(`presign failed: ${r.status} ${t}`);
     }
     const json = await r.json() as { url: string };
+    
+    // Record download
+    try {
+        const getUserId = (window as any).__auth0_getUserId as () => string | undefined;
+        const userId = getUserId?.();
+        if (userId) {
+            await recordDownload(userId, key, kind);
+        }
+    } catch (error) {
+        console.warn('Failed to record download:', error);
+    }
+    
     return json.url; // the pre-signed S3 URL
 }
