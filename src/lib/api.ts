@@ -20,12 +20,12 @@ export interface DatasetGroup {
     files: PresignedFile[];
 }
 
-function assert(val: any, msg: string): asserts val {
+function assert(val: unknown, msg: string): asserts val {
     if (!val) throw new Error(msg);
 }
 
 async function getToken(): Promise<string> {
-    const g = (window as any).__auth0_getToken;
+    const g = (window as Window & { __auth0_getToken?: () => Promise<string> }).__auth0_getToken;
     assert(g, "__auth0_getToken is not initialized (mount <TokenBridge /> inside <Auth0Provider>).");
     return g();
 }
@@ -143,9 +143,9 @@ export async function presignArchive(kind: 'public' | 'private'): Promise<string
     url.searchParams.set('key', key);
 
     // get an access token with audience (via the TokenBridge you added)
-    const getToken = (window as any).__auth0_getToken as () => Promise<string>;
-    if (!getToken) throw new Error('__auth0_getToken bridge is not initialized');
-    const token = await getToken();
+    const getTokenFn = (window as Window & { __auth0_getToken?: () => Promise<string> }).__auth0_getToken;
+    if (!getTokenFn) throw new Error('__auth0_getToken bridge is not initialized');
+    const token = await getTokenFn();
 
     const r = await fetch(url.toString(), {
         method: 'GET',
@@ -159,7 +159,7 @@ export async function presignArchive(kind: 'public' | 'private'): Promise<string
     
     // Record download
     try {
-        const getUserId = (window as any).__auth0_getUserId as () => string | undefined;
+        const getUserId = (window as Window & { __auth0_getUserId?: () => string | undefined }).__auth0_getUserId;
         const userId = getUserId?.();
         if (userId) {
             await recordDownload(userId, key, kind);

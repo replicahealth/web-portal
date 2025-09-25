@@ -18,7 +18,7 @@ export const RequestAccessForm: React.FC<RequestAccessFormProps> = ({ userEmail 
     setIsSubmitting(true);
 
     try {
-      const getToken = (window as any).__auth0_getToken;
+      const getToken = (window as Window & { __auth0_getToken?: () => Promise<string> }).__auth0_getToken;
       if (!getToken) throw new Error('Auth token not available');
       const token = await getToken();
       

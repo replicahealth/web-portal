@@ -66,7 +66,7 @@ export default function Datasets() {
         const allDatasets: Dataset[] = [];
         
         try {
-            const getToken = (window as any).__auth0_getToken;
+            const getToken = (window as Window & { __auth0_getToken?: () => Promise<string> }).__auth0_getToken;
             if (!getToken) throw new Error('Auth token not available');
             const token = await getToken();
             
@@ -76,7 +76,7 @@ export default function Datasets() {
             
             if (response.ok) {
                 const data = await response.json();
-                data.groups.forEach((group: any) => {
+                data.groups.forEach((group: Dataset) => {
                     allDatasets.push({ ...group });
                 });
             } else {
@@ -116,7 +116,8 @@ export default function Datasets() {
         setLoading(true);
         
         try {
-            const getToken = (window as any).__auth0_getToken;
+            const getToken = (window as Window & { __auth0_getToken?: () => Promise<string> }).__auth0_getToken;
+            if (!getToken) throw new Error('Auth token not available');
             const token = await getToken();
             const selectedNames = Array.from(selectedDatasets);
             
@@ -134,14 +135,14 @@ export default function Datasets() {
             
             // Show download instructions for multiple files
             if (urls.length > 1) {
-                const message = `Found ${urls.length} files to download:\n\n${urls.map((item: any, i: number) => `${i+1}. ${item.key.split('/').pop()}`).join('\n')}\n\nClick OK to open all download links. You may need to allow popups in your browser.`;
+                const message = `Found ${urls.length} files to download:\n\n${urls.map((item: { key: string; url: string }, i: number) => `${i+1}. ${item.key.split('/').pop()}`).join('\n')}\n\nClick OK to open all download links. You may need to allow popups in your browser.`;
                 if (!confirm(message)) {
                     return;
                 }
             }
             
             // Create and trigger all downloads immediately
-            urls.forEach((item: any) => {
+            urls.forEach((item: { key: string; url: string }) => {
                 
                 // Use window.open for better popup handling
                 const newWindow = window.open(item.url, '_blank');

@@ -5,7 +5,7 @@ export default function TokenBridge() {
     const { getAccessTokenSilently, isAuthenticated, user } = useAuth0();
 
     // Expose a function on window for non-React code to call
-    (window as any).__auth0_getToken = async () => {
+    (window as Window & { __auth0_getToken?: () => Promise<string> }).__auth0_getToken = async () => {
         const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
         if (!audience) {
             throw new Error("VITE_AUTH0_AUDIENCE is required to fetch an access token");
@@ -19,7 +19,7 @@ export default function TokenBridge() {
     };
 
     // Expose user ID for tracking
-    (window as any).__auth0_getUserId = () => user?.sub;
+    (window as Window & { __auth0_getUserId?: () => string | undefined }).__auth0_getUserId = () => user?.sub;
 
     return null;
 }

@@ -46,8 +46,8 @@ export default function TermsGate({ kind, version, label, termsPath, onAfterDown
 
             // Start the download
             window.location.href = url;
-        } catch (e: any) {
-            setErr(e?.message || 'Failed to fetch');
+        } catch (e: unknown) {
+            setErr(e instanceof Error ? e.message : 'Failed to fetch');
         } finally {
             setBusy(false);
         }
