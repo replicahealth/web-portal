@@ -122,11 +122,8 @@ ${user?.email || '[RESEARCHER_EMAIL]'} (the "Researcher") has requested permissi
                     </button>
                     <button
                         className="btn btn-primary"
-                        onClick={async () => {
-                            if (user?.sub) {
-                                const version = import.meta.env[`VITE_TERMS_${datasetType.toUpperCase()}_VERSION`] || 'v1';
-                                await recordTermsAgreement(user.sub, version, datasetType);
-                            }
+                        onClick={() => {
+                            // Terms tracking will be handled by the backend when download occurs
                             onAccept();
                         }}
                         disabled={!hasScrolled}
