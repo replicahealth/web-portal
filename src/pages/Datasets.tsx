@@ -1,6 +1,7 @@
 // pages/Datasets.tsx
 import React from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import * as Sentry from '@sentry/react';
 import Protected from '../components/Protected';
 import { hasPrivate } from '../auth/roles';
 import { RequestAccessForm } from '../components/RequestAccessForm';
@@ -48,8 +49,16 @@ export default function Datasets() {
                 const r = (claims?.[ns] as string[]) || [];
                 setRoles(r);
                 setLoaded(true);
+                
+                // Set Sentry user context
+                Sentry.setUser({
+                    id: user?.sub,
+                    email: user?.email,
+                    username: user?.name
+                });
             } catch (error) {
                 console.error('Failed to get token claims:', error);
+                Sentry.captureException(error);
                 setRoles([]);
                 setLoaded(true);
             }

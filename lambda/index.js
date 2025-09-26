@@ -1,10 +1,24 @@
 // Simple Lambda function that validates JWT tokens manually
+const Sentry = require('@sentry/node');
 const { S3Client, ListObjectsV2Command, GetObjectCommand } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 const https = require('https');
 const { promisify } = require('util');
+
+// Initialize Sentry
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  environment: process.env.NODE_ENV || "production",
+  tracesSampleRate: 1.0,
+  initialScope: {
+    tags: {
+      platform: "backend",
+      component: "lambda"
+    }
+  }
+});
 
 const s3 = new S3Client({ region: "us-east-1" });
 const ses = new SESClient({ region: "us-east-1" });
@@ -325,7 +339,7 @@ function cors(body, statusCode = 200) {
   };
 }
 
-exports.handler = async (event) => {
+exports.handler = Sentry.wrapHandler(async (event) => {
   if (event?.httpMethod === "OPTIONS") return cors("", 204);
 
   // For all operations, require JWT validation
@@ -521,6 +535,7 @@ Please review and respond to the user.`,
     return cors({ error: "Invalid operation", operation: op, available: ["get", "list_groups", "batch", "request_access"] }, 400);
   } catch (err) {
     console.error('Handler error:', err);
+    Sentry.captureException(err);
     return cors({ error: "internal error" }, 500);
   }
-};
+});
