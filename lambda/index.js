@@ -528,6 +528,30 @@ Please review and respond to the user.`,
           skipped.push({ name, reason: "group name not found" });
         }
       }
+      
+      // Track batch download and terms agreement
+      if (urls.length > 0) {
+        const hasPrivate = urls.some(item => {
+          const groupName = groups.find(g => g.files.some(f => f.key === item.key))?.name;
+          return groupName && getDatasetType(groupName) === 'private';
+        });
+        
+        const downloadType = hasPrivate ? 'private' : 'public';
+        
+        // Track batch download
+        await trackUserActivity(claims.sub, 'download', {
+          filename: `batch_download_${urls.length}_files`,
+          datasets: datasets,
+          fileCount: urls.length,
+          type: downloadType
+        });
+        
+        // Track terms agreement for batch download
+        await trackUserActivity(claims.sub, 'terms_agreement', {
+          version: process.env.TERMS_VERSION || 'v1',
+          type: downloadType
+        });
+      }
 
       return cors({ urls, skipped, expires: URL_TTL_SECONDS });
     }
