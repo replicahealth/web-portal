@@ -339,7 +339,7 @@ function cors(body, statusCode = 200) {
   };
 }
 
-exports.handler = Sentry.wrapHandler(async (event) => {
+exports.handler = async (event) => {
   if (event?.httpMethod === "OPTIONS") return cors("", 204);
 
   // For all operations, require JWT validation
@@ -538,4 +538,4 @@ Please review and respond to the user.`,
     Sentry.captureException(err);
     return cors({ error: "internal error" }, 500);
   }
-});
+};
