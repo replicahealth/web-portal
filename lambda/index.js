@@ -3,14 +3,128 @@ const { S3Client, ListObjectsV2Command, GetObjectCommand } = require("@aws-sdk/c
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { SESClient, SendEmailCommand } = require("@aws-sdk/client-ses");
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
+const https = require('https');
+const { promisify } = require('util');
 
 const s3 = new S3Client({ region: "us-east-1" });
 const ses = new SESClient({ region: "us-east-1" });
 const dynamodb = new DynamoDBClient({ region: "us-east-1" });
 
-// Track user activity
+// Get Auth0 Management API token
+async function getAuth0ManagementToken() {
+  const domain = process.env.AUTH0_DOMAIN;
+  const clientId = process.env.AUTH0_M2M_CLIENT_ID;
+  const clientSecret = process.env.AUTH0_M2M_CLIENT_SECRET;
+  
+  if (!domain || !clientId || !clientSecret) {
+    console.warn('Auth0 M2M credentials not configured, skipping user metadata tracking');
+    return null;
+  }
+  
+  const data = JSON.stringify({
+    client_id: clientId,
+    client_secret: clientSecret,
+    audience: `https://${domain}/api/v2/`,
+    grant_type: 'client_credentials'
+  });
+  
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: domain,
+      path: '/oauth/token',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': data.length
+      }
+    }, (res) => {
+      let body = '';
+      res.on('data', (chunk) => body += chunk);
+      res.on('end', () => {
+        try {
+          const response = JSON.parse(body);
+          resolve(response.access_token);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+    
+    req.on('error', reject);
+    req.write(data);
+    req.end();
+  });
+}
+
+// Update Auth0 user metadata
+async function updateAuth0UserMetadata(userId, updateData) {
+  try {
+    const token = await getAuth0ManagementToken();
+    if (!token) return;
+    
+    const domain = process.env.AUTH0_DOMAIN;
+    
+    // Get current user metadata
+    const getUserData = await new Promise((resolve, reject) => {
+      const req = https.request({
+        hostname: domain,
+        path: `/api/v2/users/${encodeURIComponent(userId)}`,
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }, (res) => {
+        let body = '';
+        res.on('data', (chunk) => body += chunk);
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(body));
+          } catch (error) {
+            reject(error);
+          }
+        });
+      });
+      req.on('error', reject);
+      req.end();
+    });
+    
+    const currentMetadata = getUserData.user_metadata || {};
+    const updatedMetadata = { ...currentMetadata, ...updateData };
+    
+    // Update user metadata
+    const patchData = JSON.stringify({ user_metadata: updatedMetadata });
+    
+    await new Promise((resolve, reject) => {
+      const req = https.request({
+        hostname: domain,
+        path: `/api/v2/users/${encodeURIComponent(userId)}`,
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Content-Length': patchData.length
+        }
+      }, (res) => {
+        let body = '';
+        res.on('data', (chunk) => body += chunk);
+        res.on('end', () => resolve(body));
+      });
+      req.on('error', reject);
+      req.write(patchData);
+      req.end();
+    });
+    
+    console.log('Auth0 user metadata updated successfully');
+  } catch (error) {
+    console.error('Failed to update Auth0 user metadata:', error);
+  }
+}
+
+// Track user activity in both DynamoDB and Auth0
 async function trackUserActivity(userId, activity, details) {
   try {
+    // Track in DynamoDB
     await dynamodb.send(new PutItemCommand({
       TableName: 'user-activity-log',
       Item: {
@@ -20,6 +134,35 @@ async function trackUserActivity(userId, activity, details) {
         details: { S: JSON.stringify(details) }
       }
     }));
+    
+    // Track in Auth0 user metadata
+    if (activity === 'download') {
+      const currentMetadata = {};
+      const downloads = currentMetadata.downloads || [];
+      downloads.push({
+        filename: details.filename,
+        timestamp: new Date().toISOString(),
+        type: details.type
+      });
+      
+      await updateAuth0UserMetadata(userId, {
+        downloads: downloads.slice(-50) // Keep last 50 downloads
+      });
+    }
+    
+    if (activity === 'terms_agreement') {
+      const currentMetadata = {};
+      const agreements = currentMetadata.termsAgreements || [];
+      agreements.push({
+        version: details.version,
+        timestamp: new Date().toISOString(),
+        type: details.type
+      });
+      
+      await updateAuth0UserMetadata(userId, {
+        termsAgreements: agreements
+      });
+    }
   } catch (error) {
     console.error('Failed to track activity:', error);
   }
@@ -314,11 +457,19 @@ Please review and respond to the user.`,
         }),
         { expiresIn: URL_TTL_SECONDS }
       );
-      // Track download
+      // Track download and terms agreement
+      const downloadType = key.includes('public') ? 'public' : 'private';
+      
       await trackUserActivity(claims.sub, 'download', {
         filename: key.split('/').pop(),
         key: key,
-        type: key.includes('public') ? 'public' : 'private'
+        type: downloadType
+      });
+      
+      // Also track terms agreement for this download
+      await trackUserActivity(claims.sub, 'terms_agreement', {
+        version: process.env.TERMS_VERSION || 'v1',
+        type: downloadType
       });
       
       return cors({ url, method: "GET", key, expires: URL_TTL_SECONDS });

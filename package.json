@@ -10,6 +10,7 @@
     "lint:fix": "eslint . --fix",
     "type-check": "tsc -b --noEmit",
     "pre-commit": "npm run lint && npm run type-check",
+    "prepare": "husky install",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -39,9 +40,17 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
     "vitest": "^1.0.0",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }
