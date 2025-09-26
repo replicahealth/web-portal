@@ -24,10 +24,22 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: us-east-1
     
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        cache-dependency-path: lambda/package-lock.json
+    
+    - name: Install Lambda dependencies
+      run: |
+        cd lambda
+        npm install --production
+    
     - name: Deploy Lambda function
       run: |
         cd lambda
-        zip ../lambda-deployment.zip index.js
+        zip -r ../lambda-deployment.zip . -x "*.git*" "node_modules/.cache/*"
         cd ..
         aws lambda update-function-code \
           --function-name web-portal-presign \
