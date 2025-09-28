@@ -8,7 +8,8 @@ app.use(express.json());
 // Mock public datasets
 const publicGroups = [
     {
-        name: "Loop study public dataset",
+        name: "Loop Observational Study",
+        type: "public",
         count: 2,
         files: [
             { key: "processed_data_final_expanded/Loop_Part1_of_2.csv", size: 5120000 },
@@ -16,17 +17,43 @@ const publicGroups = [
         ]
     },
     {
-        name: "FLAIRPublicDataSet",
+        name: "FLAIR",
+        type: "public",
         count: 1,
         files: [
             { key: "processed_data_final_expanded/Flair.csv", size: 2560000 }
         ]
     },
     {
-        name: "OpenAPS Data",
+        name: "OpenAPS Commons",
+        type: "public",
         count: 1,
         files: [
             { key: "processed_data_final_expanded/OpenAPS.csv", size: 1792000 }
+        ]
+    },
+    {
+        name: "IOBP2 RCT",
+        type: "public",
+        count: 1,
+        files: [
+            { key: "processed_data_final_expanded/IOBP2.csv", size: 3072000 }
+        ]
+    },
+    {
+        name: "PEDAP",
+        type: "public",
+        count: 1,
+        files: [
+            { key: "processed_data_final_expanded/PEDAP.csv", size: 2048000 }
+        ]
+    },
+    {
+        name: "OhioT1DM",
+        type: "public",
+        count: 1,
+        files: [
+            { key: "processed_data_final_expanded/OhioT1DM.csv", size: 512000 }
         ]
     }
 ];
@@ -34,16 +61,40 @@ const publicGroups = [
 // Mock private datasets
 const privateGroups = [
     {
-        name: "DCLP",
-        count: 3,
+        name: "DCLP3",
+        type: "private",
+        count: 1,
         files: [
-            { key: "processed_data_final_expanded/DCLP1.csv", size: 1024000 },
-            { key: "processed_data_final_expanded/DCLP2.csv", size: 2048000 },
             { key: "processed_data_final_expanded/DCLP3.csv", size: 1536000 }
         ]
     },
     {
-        name: "JDRF_CGM_RCT",
+        name: "DCLP5",
+        type: "private",
+        count: 1,
+        files: [
+            { key: "processed_data_final_expanded/DCLP5.csv", size: 2048000 }
+        ]
+    },
+    {
+        name: "T1DEXI",
+        type: "private",
+        count: 1,
+        files: [
+            { key: "processed_data_final_expanded/T1DEXI.csv", size: 1024000 }
+        ]
+    },
+    {
+        name: "T1DEXIP",
+        type: "private",
+        count: 1,
+        files: [
+            { key: "processed_data_final_expanded/T1DEXIP.csv", size: 512000 }
+        ]
+    },
+    {
+        name: "Tidepool-JDRF Project",
+        type: "private",
         count: 1,
         files: [
             { key: "processed_data_final_expanded/Tidepool-JDRF-Study.csv", size: 3072000 }
