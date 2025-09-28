@@ -456,18 +456,18 @@ export default function Datasets() {
                                 Clear Selection
                             </button>
                         </div>
-                        
-                        {seesPrivate && datasets.filter(d => d.type === 'private').length > 0 && (
+
+                        {datasets.filter(d => d.type === 'public').length > 0 && (
                             <div style={{ marginBottom: 24 }}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                                    <h3>Private Datasets</h3>
+                                    <h3>Public Datasets</h3>
                                     <div style={{ display: 'flex', gap: 8 }}>
                                         <button
                                             onClick={() => {
-                                                const privateDatasets = datasets.filter(d => d.type === 'private');
+                                                const publicDatasets = datasets.filter(d => d.type === 'public');
                                                 setSelectedDatasets(prev => {
                                                     const newSet = new Set(prev);
-                                                    privateDatasets.forEach(d => newSet.add(d.name));
+                                                    publicDatasets.forEach(d => newSet.add(d.name));
                                                     return newSet;
                                                 });
                                             }}
@@ -478,10 +478,10 @@ export default function Datasets() {
                                         </button>
                                         <button
                                             onClick={() => {
-                                                const privateDatasets = datasets.filter(d => d.type === 'private');
+                                                const publicDatasets = datasets.filter(d => d.type === 'public');
                                                 setSelectedDatasets(prev => {
                                                     const newSet = new Set(prev);
-                                                    privateDatasets.forEach(d => newSet.delete(d.name));
+                                                    publicDatasets.forEach(d => newSet.delete(d.name));
                                                     return newSet;
                                                 });
                                             }}
@@ -493,12 +493,12 @@ export default function Datasets() {
                                     </div>
                                 </div>
                                 <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: 12, lineHeight: '1.6' }}>
-                                    These datasets are available for research use with appropriate data use agreements (DUAs).
-                                    Access procedures vary by dataset - some require institutional agreements while others can be accessed
-                                    through individual researcher applications.
+                                    Immediately available datasets donated by the Jaeb Center for Health Research, Loop observational study,
+                                    and other public sources. These datasets comprise over 1,500 patient-years of data and require no additional
+                                    agreements beyond standard MetaboNet terms of use.
                                 </p>
                                 <div style={{ border: '1px solid #ddd', borderRadius: 4, backgroundColor: 'white' }}>
-                                    {datasets.filter(d => d.type === 'private').map((dataset) => (
+                                    {datasets.filter(d => d.type === 'public').map((dataset) => (
                                         <div
                                             key={dataset.name}
                                             style={{
@@ -542,18 +542,18 @@ export default function Datasets() {
                                 </div>
                             </div>
                         )}
-                        
-                        {datasets.filter(d => d.type === 'public').length > 0 && (
+
+                        {seesPrivate && datasets.filter(d => d.type === 'private').length > 0 && (
                             <div>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                                    <h3>Public Datasets</h3>
+                                    <h3>Private Datasets</h3>
                                     <div style={{ display: 'flex', gap: 8 }}>
                                         <button
                                             onClick={() => {
-                                                const publicDatasets = datasets.filter(d => d.type === 'public');
+                                                const privateDatasets = datasets.filter(d => d.type === 'private');
                                                 setSelectedDatasets(prev => {
                                                     const newSet = new Set(prev);
-                                                    publicDatasets.forEach(d => newSet.add(d.name));
+                                                    privateDatasets.forEach(d => newSet.add(d.name));
                                                     return newSet;
                                                 });
                                             }}
@@ -564,10 +564,10 @@ export default function Datasets() {
                                         </button>
                                         <button
                                             onClick={() => {
-                                                const publicDatasets = datasets.filter(d => d.type === 'public');
+                                                const privateDatasets = datasets.filter(d => d.type === 'private');
                                                 setSelectedDatasets(prev => {
                                                     const newSet = new Set(prev);
-                                                    publicDatasets.forEach(d => newSet.delete(d.name));
+                                                    privateDatasets.forEach(d => newSet.delete(d.name));
                                                     return newSet;
                                                 });
                                             }}
@@ -579,12 +579,12 @@ export default function Datasets() {
                                     </div>
                                 </div>
                                 <p style={{ fontSize: '0.9rem', color: '#64748b', marginBottom: 12, lineHeight: '1.6' }}>
-                                    Immediately available datasets donated by the Jaeb Center for Health Research, Loop observational study,
-                                    and other public sources. These datasets comprise over 1,500 patient-years of data and require no additional
-                                    agreements beyond standard MetaboNet terms of use.
+                                    These datasets are available for research use with appropriate data use agreements (DUAs).
+                                    Access procedures vary by dataset - some require institutional agreements while others can be accessed
+                                    through individual researcher applications.
                                 </p>
                                 <div style={{ border: '1px solid #ddd', borderRadius: 4, backgroundColor: 'white' }}>
-                                    {datasets.filter(d => d.type === 'public').map((dataset) => (
+                                    {datasets.filter(d => d.type === 'private').map((dataset) => (
                                         <div
                                             key={dataset.name}
                                             style={{
