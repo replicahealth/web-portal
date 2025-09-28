@@ -236,17 +236,18 @@ async function validateJWT(token) {
 // Map each final CSV stem to the dataset/group name your UI shows
 function toGroupName(stem) {
   const s = (stem || "").trim();
-  if (/^DCLP\d*$/i.test(s)) return "DCLP";
-  if (/^Loop_Part\d+_of_\d+$/i.test(s)) return "Loop study public dataset";
+  if (/^DCLP3\d*$/i.test(s)) return "DCLP3";
+  if (/^DCLP5\d*$/i.test(s)) return "DCLP5";
+  if (/^Loop_Part\d+_of_\d+$/i.test(s)) return "Loop Observational Study";
   if (/^Tidepool-JDRF-/i.test(s)) return "JDRF_CGM_RCT";
-  if (/^Flair$/i.test(s)) return "FLAIRPublicDataSet";
-  if (/^OpenAPS$/i.test(s)) return "OpenAPS Data";
-  if (/^ShanghaiT1DM$/i.test(s)) return "Shanghai";
+  if (/^Flair$/i.test(s)) return "FLAIR";
+  if (/^OpenAPS$/i.test(s)) return "OpenAPS Commons";
+  if (/^ShanghaiT1DM$/i.test(s)) return "ShanghaiT1DM";
   if (/^CTR3$/i.test(s)) return "CTR3";
-  if (/^PEDAP$/i.test(s)) return "PEDAP Public Dataset";
+  if (/^PEDAP$/i.test(s)) return "PEDAP";
   if (/^OhioT1DM$/i.test(s)) return "OhioT1DM";
-  if (/^T1DEXI$/i.test(s)) return "JAEB_ilet_trial";
-  if (/^T1DEXIP$/i.test(s)) return "T1DEXI";
+  if (/^T1DEXI$/i.test(s)) return "T1DEXI";
+  if (/^T1DEXIP$/i.test(s)) return "T1DEXIP";
   if (/^AZT1D$/i.test(s)) return "AIDE_T1D";
   if (/^DiaTrend$/i.test(s)) return "DiaTrend";
   if (/^HUPA-UCM$/i.test(s)) return "HUPA-UCM";
@@ -257,11 +258,14 @@ function toGroupName(stem) {
 // Determine if a dataset is public or private
 function getDatasetType(groupName) {
   const publicDatasets = [
-    "Loop study public dataset",
-    "FLAIRPublicDataSet", 
-    "OpenAPS Data",
-    "PEDAP Public Dataset",
-    "Shanghai"
+    "Loop Observational Study",
+    "FLAIR",
+    "PEDAP",
+    "ShanghaiT1DM",
+    "IOBP2",
+    "DCLP3",
+    "DCLP5",
+    "CTR3"
   ];
   
   return publicDatasets.includes(groupName) ? 'public' : 'private';
