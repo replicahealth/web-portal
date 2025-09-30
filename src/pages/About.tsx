@@ -10,7 +10,7 @@ export default function About() {
         { name: 'IOBP2 RCT', subjects: 440, duration: '3.8 mo', patientYears: 136, description: 'Insulin-on-board prediction RCT', access: 'Public' },
         { name: 'T1DEXI', subjects: 409, duration: '1.3 mo', patientYears: 45.2, description: 'Exercise Initiative study', access: 'DUA Required' },
         { name: 'Tidepool-JDRF Project', subjects: 300, duration: '11.6 mo', patientYears: 286.5, description: 'Real-world Tidepool platform data', access: 'DUA Required' },
-        { name: 'T1DEXIP', subjects: 211, duration: '0.3 mo', patientYears: 5.9, description: 'T1DEXI Pilot study', access: 'DUA Required' },
+        { name: 'T1DEXIP', subjects: 211, duration: '0.3 mo', patientYears: 5.9, description: 'Pediatric exercise study in adolescents', access: 'DUA Required' },
         { name: 'OpenAPS Commons', subjects: 183, duration: '9.2 mo', patientYears: 140.1, description: 'OpenAPS AID community data', access: 'DUA (OpenAPS Criteria)' },
         { name: 'FLAIR', subjects: 113, duration: '6.7 mo', patientYears: 63.3, description: 'Flash glucose monitoring study', access: 'Public' },
         { name: 'DCLP3', subjects: 112, duration: '6.1 mo', patientYears: 57.4, description: 'Hybrid closed-loop trial', access: 'Public' },

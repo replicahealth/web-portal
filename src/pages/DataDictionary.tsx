@@ -467,8 +467,8 @@ export default function DataDictionary() {
                                 </tr>
                                 <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
                                     <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>T1DEXIP</td>
-                                    <td style={{ padding: '10px' }}>T1DEXI Pilot</td>
-                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Preliminary exercise study data</td>
+                                    <td style={{ padding: '10px' }}>T1D Exercise Initiative Pediatric</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Real-world exercise study in adolescents with T1D</td>
                                 </tr>
                                 <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
                                     <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>Tidepool_PartX_of_8</td>
