@@ -453,32 +453,57 @@ export default function DataDictionary() {
                                 <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
                                     <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>Loop_Part1_of_8...Loop_Part8_of_8</td>
                                     <td style={{ padding: '10px' }}>Loop Observational Study</td>
-                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Large DIY AID user cohort</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Large DIY AID user cohort, Loop algorithm data</td>
+                                </tr>
+                                <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
+                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>IOBP2</td>
+                                    <td style={{ padding: '10px' }}>IOBP2 RCT</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Insulin-on-board prediction RCT, all insulin as bolus</td>
                                 </tr>
                                 <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>OhioT1DM</td>
-                                    <td style={{ padding: '10px' }}>OhioT1DM</td>
-                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Physiological signals (GSR, temperature), exercise data</td>
-                                </tr>
-                                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>T1DEXI, T1DEXIP</td>
+                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>T1DEXI</td>
                                     <td style={{ padding: '10px' }}>T1D Exercise Initiative</td>
-                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Focused on exercise impacts</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Structured exercise protocols with heart rate monitoring</td>
+                                </tr>
+                                <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
+                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>T1DEXIP</td>
+                                    <td style={{ padding: '10px' }}>T1DEXI Pilot</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Preliminary exercise study data</td>
                                 </tr>
                                 <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>DCLP3, DCLP5</td>
-                                    <td style={{ padding: '10px' }}>Diabetes Control and Life Project</td>
-                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Hybrid closed-loop RCT data</td>
+                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>Tidepool_PartX_of_8</td>
+                                    <td style={{ padding: '10px' }}>Tidepool-JDRF Project</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Real-world diverse pump/CGM combinations</td>
+                                </tr>
+                                <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
+                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>OpenAPS_Commons</td>
+                                    <td style={{ padding: '10px' }}>OpenAPS Commons</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Community-contributed OpenAPS AID data</td>
                                 </tr>
                                 <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
                                     <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>Flair</td>
                                     <td style={{ padding: '10px' }}>FLAIR Study</td>
                                     <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Flash glucose monitoring (CGM only)</td>
                                 </tr>
+                                <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
+                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>DCLP3</td>
+                                    <td style={{ padding: '10px' }}>DCLP3</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Diabetes Control and Life Project phase 3, hybrid closed-loop</td>
+                                </tr>
                                 <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>IOBP2</td>
-                                    <td style={{ padding: '10px' }}>IOBP2 RCT</td>
-                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>All insulin recorded as bolus</td>
+                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>DCLP5</td>
+                                    <td style={{ padding: '10px' }}>DCLP5</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Long-term closed-loop outcomes study</td>
+                                </tr>
+                                <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fafafa' }}>
+                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>PEDAP</td>
+                                    <td style={{ padding: '10px' }}>PEDAP</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Pediatric diabetes advanced technology study</td>
+                                </tr>
+                                <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                    <td style={{ padding: '10px', fontFamily: 'monospace', fontSize: '0.85rem' }}>OhioT1DM</td>
+                                    <td style={{ padding: '10px' }}>OhioT1DM</td>
+                                    <td style={{ padding: '10px', fontSize: '0.85rem', color: '#475569' }}>Physiological signals (GSR, temperature), deep phenotyping</td>
                                 </tr>
                             </tbody>
                         </table>

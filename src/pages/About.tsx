@@ -1,6 +1,43 @@
 import { Link } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function About() {
+    const { isAuthenticated } = useAuth0();
+
+    // Dataset information for the overview table
+    const allDatasets = [
+        { name: 'Loop Observational Study', subjects: 843, duration: '11.6 mo', patientYears: 806.5, description: 'DIY Loop AID system users', access: 'Public' },
+        { name: 'IOBP2 RCT', subjects: 440, duration: '3.8 mo', patientYears: 136, description: 'Insulin-on-board prediction RCT', access: 'Public' },
+        { name: 'T1DEXI', subjects: 409, duration: '1.3 mo', patientYears: 45.2, description: 'Exercise Initiative study', access: 'DUA Required' },
+        { name: 'Tidepool-JDRF Project', subjects: 300, duration: '11.6 mo', patientYears: 286.5, description: 'Real-world Tidepool platform data', access: 'DUA Required' },
+        { name: 'T1DEXIP', subjects: 211, duration: '0.3 mo', patientYears: 5.9, description: 'T1DEXI Pilot study', access: 'DUA Required' },
+        { name: 'OpenAPS Commons', subjects: 183, duration: '9.2 mo', patientYears: 140.1, description: 'OpenAPS AID community data', access: 'DUA (OpenAPS Criteria)' },
+        { name: 'FLAIR', subjects: 113, duration: '6.7 mo', patientYears: 63.3, description: 'Flash glucose monitoring study', access: 'Public' },
+        { name: 'DCLP3', subjects: 112, duration: '6.1 mo', patientYears: 57.4, description: 'Hybrid closed-loop trial', access: 'Public' },
+        { name: 'DCLP5', subjects: 100, duration: '11.0 mo', patientYears: 92.0, description: 'Long-term closed-loop outcomes', access: 'Public' },
+        { name: 'PEDAP', subjects: 99, duration: '8.4 mo', patientYears: 68.7, description: 'Pediatric advanced tech study', access: 'Public' },
+        { name: 'OhioT1DM', subjects: 12, duration: '1.8 mo', patientYears: 1.8, description: 'Deeply phenotyped with exercise', access: 'DUA Required' }
+    ];
+
+    const totalSubjects = allDatasets.reduce((sum, d) => sum + d.subjects, 0);
+    const totalPatientYears = allDatasets.reduce((sum, d) => sum + d.patientYears, 0);
+
+    // Styles for the table
+    const tableStyles = {
+        table: { width: '100%', fontSize: '0.85rem', borderCollapse: 'collapse' as const },
+        headerRow: { borderBottom: '2px solid #e2e8f0', background: '#f8fafc' },
+        headerCell: { padding: '8px 12px', fontWeight: '600' },
+        dataRow: { borderBottom: '1px solid #f1f5f9' },
+        dataRowAlt: { borderBottom: '1px solid #f1f5f9', background: '#fafafa' },
+        dataCell: { padding: '6px 12px' },
+        nameCell: { padding: '6px 12px', fontWeight: '500' },
+        descCell: { padding: '6px 12px', fontSize: '0.8rem', color: '#64748b' },
+        publicAccess: { color: '#16a34a', fontWeight: '500' },
+        duaAccess: { color: '#2563eb', fontWeight: '500' },
+        footerRow: { borderTop: '2px solid #e2e8f0', background: '#f8fafc' },
+        footerCell: { padding: '8px 12px', fontWeight: '600' }
+    };
+
     return (
         <div className="container">
             <div className="welcome" style={{ marginBottom: '2rem' }}>
@@ -70,59 +107,65 @@ export default function About() {
                         MetaboNet consolidates data from multiple sources, each bringing unique value to the comprehensive dataset. All datasets include continuous glucose monitoring (CGM) and corresponding insulin pump dosing data as core requirements.
                     </p>
 
-                    <div style={{ marginTop: '2rem' }}>
-                        <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '1rem' }}>Current Dataset Sources</h3>
-                        <div style={{ overflowX: 'auto' }}>
-                            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
-                                <thead>
-                                    <tr style={{ borderBottom: '2px solid #e2e8f0' }}>
-                                        <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600' }}>Dataset</th>
-                                        <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600' }}>Subjects</th>
-                                        <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600' }}>Avg Duration</th>
-                                        <th style={{ padding: '12px', textAlign: 'left', fontWeight: '600' }}>Access Type</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                        <td style={{ padding: '12px' }}>Loop Observational Study</td>
-                                        <td style={{ padding: '12px' }}>843</td>
-                                        <td style={{ padding: '12px' }}>11.6 months</td>
-                                        <td style={{ padding: '12px', color: '#16a34a' }}>Public</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                        <td style={{ padding: '12px' }}>T1DEXI</td>
-                                        <td style={{ padding: '12px' }}>409</td>
-                                        <td style={{ padding: '12px' }}>1.3 months</td>
-                                        <td style={{ padding: '12px', color: '#2563eb' }}>DUA Required</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                        <td style={{ padding: '12px' }}>IOBP2 RCT</td>
-                                        <td style={{ padding: '12px' }}>440</td>
-                                        <td style={{ padding: '12px' }}>3.8 months</td>
-                                        <td style={{ padding: '12px', color: '#16a34a' }}>Public</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                        <td style={{ padding: '12px' }}>Tidepool-JDRF Project</td>
-                                        <td style={{ padding: '12px' }}>300</td>
-                                        <td style={{ padding: '12px' }}>11.6 months</td>
-                                        <td style={{ padding: '12px', color: '#2563eb' }}>DUA Required</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                        <td style={{ padding: '12px' }}>OpenAPS Commons</td>
-                                        <td style={{ padding: '12px' }}>183</td>
-                                        <td style={{ padding: '12px' }}>9.2 months</td>
-                                        <td style={{ padding: '12px', color: '#16a34a' }}>Public</td>
-                                    </tr>
-                                    <tr style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                        <td style={{ padding: '12px' }}>DCLP3 & DCLP5</td>
-                                        <td style={{ padding: '12px' }}>212</td>
-                                        <td style={{ padding: '12px' }}>8.5 months</td>
-                                        <td style={{ padding: '12px', color: '#16a34a' }}>Public</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    {/* Show compact dataset overview table only when signed in */}
+                    {isAuthenticated ? (
+                        <div style={{ marginTop: '2rem' }}>
+                            <h3 style={{ fontSize: '1.1rem', fontWeight: '600', marginBottom: '0.75rem' }}>Current Dataset Sources</h3>
+                            <div style={{ overflowX: 'auto' }}>
+                                <table style={tableStyles.table}>
+                                    <thead>
+                                        <tr style={tableStyles.headerRow}>
+                                            <th style={{ ...tableStyles.headerCell, textAlign: 'left' }}>Dataset</th>
+                                            <th style={{ ...tableStyles.headerCell, textAlign: 'center' }}>Subjects</th>
+                                            <th style={{ ...tableStyles.headerCell, textAlign: 'center' }}>Average Duration<br />per Patient</th>
+                                            <th style={{ ...tableStyles.headerCell, textAlign: 'center' }}>Patient-Years</th>
+                                            <th style={{ ...tableStyles.headerCell, textAlign: 'left' }}>Description</th>
+                                            <th style={{ ...tableStyles.headerCell, textAlign: 'center' }}>Access</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {allDatasets.map((dataset, index) => (
+                                            <tr key={dataset.name} style={index % 2 === 0 ? tableStyles.dataRow : tableStyles.dataRowAlt}>
+                                                <td style={tableStyles.nameCell}>{dataset.name}</td>
+                                                <td style={{ ...tableStyles.dataCell, textAlign: 'center' }}>{dataset.subjects}</td>
+                                                <td style={{ ...tableStyles.dataCell, textAlign: 'center' }}>{dataset.duration}</td>
+                                                <td style={{ ...tableStyles.dataCell, textAlign: 'center' }}>{dataset.patientYears}</td>
+                                                <td style={tableStyles.descCell}>{dataset.description}</td>
+                                                <td style={{
+                                                    ...tableStyles.dataCell,
+                                                    textAlign: 'center',
+                                                    ...(dataset.access === 'Public' ? tableStyles.publicAccess : tableStyles.duaAccess),
+                                                    ...(dataset.access === 'DUA (OpenAPS Criteria)' && { fontSize: '0.75rem' })
+                                                }}>
+                                                    {dataset.access}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style={tableStyles.footerRow}>
+                                            <td style={tableStyles.footerCell}>Total</td>
+                                            <td style={{ ...tableStyles.footerCell, textAlign: 'center' }}>{totalSubjects.toLocaleString()}</td>
+                                            <td style={{ ...tableStyles.footerCell, textAlign: 'center' }}>-</td>
+                                            <td style={{ ...tableStyles.footerCell, textAlign: 'center' }}>{totalPatientYears.toFixed(1)}</td>
+                                            <td style={tableStyles.footerCell}></td>
+                                            <td style={tableStyles.footerCell}></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div style={{ marginTop: '2rem' }}>
+                            <h3 style={{ fontSize: '1.2rem', fontWeight: '600', marginBottom: '1rem' }}>Current Dataset Sources</h3>
+                            <p style={{ fontSize: '0.95rem', lineHeight: '1.6', color: '#64748b' }}>
+                                MetaboNet includes {totalSubjects.toLocaleString()} subjects across 11 major diabetes studies,
+                                with {totalPatientYears.toFixed(0)}+ patient-years of data. Datasets include Loop Observational Study,
+                                T1DEXI, IOBP2 RCT, Tidepool-JDRF, OpenAPS Commons, FLAIR, DCLP studies, PEDAP, and OhioT1DM.
+                                Sign in to view detailed dataset information.
+                            </p>
+                        </div>
+                    )}
 
                     <div style={{
                         marginTop: '2rem',
@@ -211,7 +254,7 @@ export default function About() {
                                 🔒 DUA-Protected Tier
                             </h3>
                             <p style={{ fontSize: '0.95rem', lineHeight: '1.6' }}>
-                                Datasets requiring data use agreements, including T1DEXI, T1DEXIP, and Tidepool-JDRF data.
+                                Datasets requiring data use agreements, including T1DEXI, T1DEXIP, OpenAPS Commons, and Tidepool-JDRF data.
                                 We provide guidance on obtaining necessary approvals for access.
                             </p>
                         </div>
