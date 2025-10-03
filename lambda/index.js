@@ -106,10 +106,12 @@ async function updateAuth0UserMetadata(userId, updateData) {
     const currentMetadata = getUserData.user_metadata || {};
     const updatedMetadata = { ...currentMetadata, ...updateData };
     
+
+    
     // Update user metadata
     const patchData = JSON.stringify({ user_metadata: updatedMetadata });
     
-    await new Promise((resolve, reject) => {
+    const response = await new Promise((resolve, reject) => {
       const req = https.request({
         hostname: domain,
         path: `/api/v2/users/${encodeURIComponent(userId)}`,
@@ -122,7 +124,17 @@ async function updateAuth0UserMetadata(userId, updateData) {
       }, (res) => {
         let body = '';
         res.on('data', (chunk) => body += chunk);
-        res.on('end', () => resolve(body));
+        res.on('end', () => {
+          if (res.statusCode !== 200) {
+            console.error('Auth0 update failed:', res.statusCode, body);
+            Sentry.captureMessage(`Auth0 API error: ${res.statusCode}`, {
+              level: 'error',
+              tags: { component: 'auth0-api' },
+              extra: { statusCode: res.statusCode, responseBody: body, userId }
+            });
+          }
+          resolve(body);
+        });
       });
       req.on('error', reject);
       req.write(patchData);
@@ -132,6 +144,10 @@ async function updateAuth0UserMetadata(userId, updateData) {
     console.log('Auth0 user metadata updated successfully');
   } catch (error) {
     console.error('Failed to update Auth0 user metadata:', error);
+    Sentry.captureException(error, {
+      tags: { component: 'auth0-metadata-update' },
+      extra: { userId }
+    });
   }
 }
 
@@ -154,6 +170,10 @@ async function trackUserActivity(userId, activity, details) {
     dynamoSuccess = true;
   } catch (dynamoError) {
     console.error('DynamoDB tracking failed:', dynamoError);
+    Sentry.captureException(dynamoError, {
+      tags: { component: 'dynamodb-tracking' },
+      extra: { userId, activity, details }
+    });
   }
   
   try {
@@ -246,6 +266,10 @@ async function trackUserActivity(userId, activity, details) {
     }
   } catch (error) {
     console.error('Failed to track activity in Auth0:', error);
+    Sentry.captureException(error, {
+      tags: { component: 'auth0-tracking' },
+      extra: { userId, activity, details }
+    });
   }
   
   if (!dynamoSuccess) {
@@ -300,6 +324,9 @@ async function validateJWT(token) {
     return payload;
   } catch (err) {
     console.error('JWT validation error:', err);
+    Sentry.captureException(err, {
+      tags: { component: 'jwt-validation' }
+    });
     return false;
   }
 }
@@ -458,6 +485,10 @@ exports.handler = async (event) => {
         console.log('Parsed body:', body); 
       } catch (parseError) {
         console.error('JSON parse error:', parseError);
+        Sentry.captureException(parseError, {
+          tags: { component: 'json-parsing' },
+          extra: { operation: 'request_access' }
+        });
         return cors({ error: "Invalid JSON in request body" }, 400);
       }
     }
@@ -509,6 +540,10 @@ Please review and respond to the user.`,
       });
     } catch (emailError) {
       console.error('Failed to send email:', emailError);
+      Sentry.captureException(emailError, {
+        tags: { component: 'ses-email' },
+        extra: { operation: 'request_access' }
+      });
       
       // Still return success to user, but log the email failure
       return cors({
@@ -554,13 +589,23 @@ Please review and respond to the user.`,
         filename: key.split('/').pop(),
         key: key,
         type: downloadType
-      }).catch(err => console.error('Download tracking failed:', err));
+      }).catch(err => {
+        console.error('Download tracking failed:', err);
+        Sentry.captureException(err, {
+          tags: { component: 'download-tracking' }
+        });
+      });
       
       // Also track terms agreement for this download
       trackUserActivity(claims.sub, 'terms_agreement', {
         version: process.env.TERMS_VERSION || 'v1',
         type: downloadType
-      }).catch(err => console.error('Terms tracking failed:', err));
+      }).catch(err => {
+        console.error('Terms tracking failed:', err);
+        Sentry.captureException(err, {
+          tags: { component: 'terms-tracking' }
+        });
+      });
       
       return cors({ url, method: "GET", key, expires: URL_TTL_SECONDS });
     }
@@ -620,13 +665,23 @@ Please review and respond to the user.`,
           datasets: datasets,
           fileCount: urls.length,
           type: downloadType
-        }).catch(err => console.error('Batch download tracking failed:', err));
+        }).catch(err => {
+          console.error('Batch download tracking failed:', err);
+          Sentry.captureException(err, {
+            tags: { component: 'batch-download-tracking' }
+          });
+        });
         
         // Track terms agreement for batch download
         trackUserActivity(claims.sub, 'terms_agreement', {
           version: process.env.TERMS_VERSION || 'v1',
           type: downloadType
-        }).catch(err => console.error('Batch terms tracking failed:', err));
+        }).catch(err => {
+          console.error('Batch terms tracking failed:', err);
+          Sentry.captureException(err, {
+            tags: { component: 'batch-terms-tracking' }
+          });
+        });
       }
 
       return cors({ urls, skipped, expires: URL_TTL_SECONDS });
