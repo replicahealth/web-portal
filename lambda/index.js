@@ -137,6 +137,9 @@ async function updateAuth0UserMetadata(userId, updateData) {
 
 // Track user activity in both DynamoDB and Auth0
 async function trackUserActivity(userId, activity, details) {
+  // Continue with Auth0 tracking even if DynamoDB fails
+  let dynamoSuccess = false;
+  
   try {
     // Track in DynamoDB
     await dynamodb.send(new PutItemCommand({
@@ -148,37 +151,105 @@ async function trackUserActivity(userId, activity, details) {
         details: { S: JSON.stringify(details) }
       }
     }));
+    dynamoSuccess = true;
+  } catch (dynamoError) {
+    console.error('DynamoDB tracking failed:', dynamoError);
+  }
+  
+  try {
     
     // Track in Auth0 user metadata
     if (activity === 'download') {
-      const currentMetadata = {};
-      const downloads = currentMetadata.downloads || [];
-      downloads.push({
-        filename: details.filename,
-        timestamp: new Date().toISOString(),
-        type: details.type
-      });
-      
-      await updateAuth0UserMetadata(userId, {
-        downloads: downloads.slice(-50) // Keep last 50 downloads
-      });
+      // Get current user data to preserve existing metadata
+      const token = await getAuth0ManagementToken();
+      if (token) {
+        const domain = process.env.AUTH0_DOMAIN;
+        const getUserData = await new Promise((resolve, reject) => {
+          const req = https.request({
+            hostname: domain,
+            path: `/api/v2/users/${encodeURIComponent(userId)}`,
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }, (res) => {
+            let body = '';
+            res.on('data', (chunk) => body += chunk);
+            res.on('end', () => {
+              try {
+                resolve(JSON.parse(body));
+              } catch (error) {
+                resolve({});
+              }
+            });
+          });
+          req.on('error', () => resolve({}));
+          req.end();
+        });
+        
+        const currentMetadata = getUserData.user_metadata || {};
+        const downloads = currentMetadata.downloads || [];
+        downloads.push({
+          filename: details.filename,
+          timestamp: new Date().toISOString(),
+          type: details.type
+        });
+        
+        await updateAuth0UserMetadata(userId, {
+          downloads: downloads.slice(-50) // Keep last 50 downloads
+        });
+      }
     }
     
     if (activity === 'terms_agreement') {
-      const currentMetadata = {};
-      const agreements = currentMetadata.termsAgreements || [];
-      agreements.push({
-        version: details.version,
-        timestamp: new Date().toISOString(),
-        type: details.type
-      });
-      
-      await updateAuth0UserMetadata(userId, {
-        termsAgreements: agreements
-      });
+      // Get current user data to preserve existing metadata
+      const token = await getAuth0ManagementToken();
+      if (token) {
+        const domain = process.env.AUTH0_DOMAIN;
+        const getUserData = await new Promise((resolve, reject) => {
+          const req = https.request({
+            hostname: domain,
+            path: `/api/v2/users/${encodeURIComponent(userId)}`,
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          }, (res) => {
+            let body = '';
+            res.on('data', (chunk) => body += chunk);
+            res.on('end', () => {
+              try {
+                resolve(JSON.parse(body));
+              } catch (error) {
+                resolve({});
+              }
+            });
+          });
+          req.on('error', () => resolve({}));
+          req.end();
+        });
+        
+        const currentMetadata = getUserData.user_metadata || {};
+        const agreements = currentMetadata.termsAgreements || [];
+        agreements.push({
+          version: details.version,
+          timestamp: new Date().toISOString(),
+          type: details.type
+        });
+        
+        await updateAuth0UserMetadata(userId, {
+          termsAgreements: agreements
+        });
+      }
     }
   } catch (error) {
-    console.error('Failed to track activity:', error);
+    console.error('Failed to track activity in Auth0:', error);
+  }
+  
+  if (!dynamoSuccess) {
+    console.log('Activity logged to CloudWatch only:', { userId, activity, details });
   }
 }
 
