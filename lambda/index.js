@@ -546,20 +546,21 @@ Please review and respond to the user.`,
         }),
         { expiresIn: URL_TTL_SECONDS }
       );
-      // Track download and terms agreement
+      // Track download and terms agreement (non-blocking)
       const downloadType = key.includes('public') ? 'public' : 'private';
       
-      await trackUserActivity(claims.sub, 'download', {
+      // Don't await to prevent timeouts
+      trackUserActivity(claims.sub, 'download', {
         filename: key.split('/').pop(),
         key: key,
         type: downloadType
-      });
+      }).catch(err => console.error('Download tracking failed:', err));
       
       // Also track terms agreement for this download
-      await trackUserActivity(claims.sub, 'terms_agreement', {
+      trackUserActivity(claims.sub, 'terms_agreement', {
         version: process.env.TERMS_VERSION || 'v1',
         type: downloadType
-      });
+      }).catch(err => console.error('Terms tracking failed:', err));
       
       return cors({ url, method: "GET", key, expires: URL_TTL_SECONDS });
     }
@@ -604,7 +605,7 @@ Please review and respond to the user.`,
         }
       }
       
-      // Track batch download and terms agreement
+      // Track batch download and terms agreement (non-blocking)
       if (urls.length > 0) {
         const hasPrivate = urls.some(item => {
           const groupName = groups.find(g => g.files.some(f => f.key === item.key))?.name;
@@ -613,19 +614,19 @@ Please review and respond to the user.`,
         
         const downloadType = hasPrivate ? 'private' : 'public';
         
-        // Track batch download
-        await trackUserActivity(claims.sub, 'download', {
+        // Track batch download (don't await to prevent timeouts)
+        trackUserActivity(claims.sub, 'download', {
           filename: `batch_download_${urls.length}_files`,
           datasets: datasets,
           fileCount: urls.length,
           type: downloadType
-        });
+        }).catch(err => console.error('Batch download tracking failed:', err));
         
         // Track terms agreement for batch download
-        await trackUserActivity(claims.sub, 'terms_agreement', {
+        trackUserActivity(claims.sub, 'terms_agreement', {
           version: process.env.TERMS_VERSION || 'v1',
           type: downloadType
-        });
+        }).catch(err => console.error('Batch terms tracking failed:', err));
       }
 
       return cors({ urls, skipped, expires: URL_TTL_SECONDS });
